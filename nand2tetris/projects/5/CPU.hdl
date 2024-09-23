@@ -51,7 +51,9 @@ CHIP CPU {
     
     ARegister(in=inA, load=loadA, out=A, out[0..14]=addressM);
     
-    DRegister(in=ALUOutput, load=instruction[4], out=D);
+    // load D?
+    And(a=instruction[4], b=isCCommand, out=loadB);
+    DRegister(in=ALUOutput, load=loadB, out=D);
 
     // use A value or M value?
     Mux16(a=A, b=inM, sel=instruction[12], out=AOrM);
@@ -71,5 +73,4 @@ CHIP CPU {
     And(a=preJump, b=isCCommand, out=jump);
 
     PC(in=A, load=jump, inc=true, reset=reset, out[0..14]=pc);
-    
 }
