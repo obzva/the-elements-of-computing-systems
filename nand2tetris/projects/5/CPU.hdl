@@ -32,5 +32,44 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-	//// Replace this comment with your code.
+    // is it A-command or C-command?
+    Not(in=instruction[15], out=isACommand);
+    Not(in=isACommand, out=isCCommand);
+    
+    // write to M?
+    And(a=isCCommand, b=instruction[3], out=writeM);
+
+    // if it is A-command
+    // use instruction as input for A
+    // otherwise it could be the output of the ALU
+    Mux16(a=ALUOutput, b=instruction, sel=isACommand, out=inA);
+    
+    // load A if it is C-command and its dest bit points to A
+    // or it is A-command
+    And(a=isCCommand, b=instruction[5], out=cSaveA);
+    Or(a=cSaveA, b=isACommand, out=loadA);
+    
+    ARegister(in=inA, load=loadA, out=A, out[0..14]=addressM);
+    
+    DRegister(in=ALUOutput, load=instruction[4], out=D);
+
+    // use A value or M value?
+    Mux16(a=A, b=inM, sel=instruction[12], out=AOrM);
+    
+    ALU(x=D, y=AOrM, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6], out=ALUOutput, out=outM, zr=outZero, ng=outNeg);
+    
+    Or(a=outZero, b=outNeg, out=outNotPos);
+    Not(in=outNotPos, out=outPos);
+
+    // jump condition?
+    And(a=instruction[2], b=outNeg, out=jumpNeg);
+    And(a=instruction[1], b=outZero, out=jumpZero);
+    And(a=instruction[0], b=outPos, out=jumpPos);
+    
+    Or(a=jumpNeg, b=jumpPos, out=jumpNonZero);
+    Or(a=jumpZero, b=jumpNonZero, out=preJump);
+    And(a=preJump, b=isCCommand, out=jump);
+
+    PC(in=A, load=jump, inc=true, reset=reset, out[0..14]=pc);
+    
 }
