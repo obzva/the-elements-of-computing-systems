@@ -11,15 +11,15 @@
 // initialize the addresses
 @SCREEN
 D=A
-@BLACK_ADDR
+@black_addr
 M=D
-@WHITE_ADDR
+@white_addr
 M=D
 
 // this is the last address of the screen
 @24576
 D=A
-@LAST
+@last
 M=D-1
 
 // this loop detects the key press
@@ -41,21 +41,21 @@ M=D-1
 	// set WHITE_ADDR to starting address
 	@SCREEN
 	D=A
-	@WHITE_ADDR
+	@white_addr
 	M=D
 
-	@BLACK_ADDR
+	@black_addr
 	D=M
-	@LAST
+	@last
 	D=D-M
 	@KBDLOOP
 	D;JGT
 
-	@BLACK_ADDR
+	@black_addr
 	A=M
 	M=-1
 
-	@BLACK_ADDR
+	@black_addr
 	M=M+1
 	
 	@KBDLOOP
@@ -66,21 +66,21 @@ M=D-1
 	// set BLACK_ADDR to starting address
 	@SCREEN
 	D=A
-	@BLACK_ADDR
+	@black_addr
 	M=D
 
-	@WHITE_ADDR
+	@white_addr
 	D=M
-	@LAST
+	@last
 	D=D-M
 	@KBDLOOP
 	D;JGT
 
-	@WHITE_ADDR
+	@white_addr
 	A=M
 	M=0
 
-	@WHITE_ADDR
+	@white_addr
 	M=M+1
 	
 	@WHITE
